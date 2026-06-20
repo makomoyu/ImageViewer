@@ -1,4 +1,3 @@
-import tkinter as tk
 from AppModel import AppModel
 from AppController import AppController
 from AppView import AppView
