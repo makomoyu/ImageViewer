@@ -70,7 +70,7 @@ class AppView(tk.Tk):
     def save_image(self):
         file_path = filedialog.asksaveasfilename(
             defaultextension=".bmp",
-            filetypes=[("BMP files", "*.bmp"), ("PNG files", "*.png"), ("JPG files", "*.jpg")]
+            filetypes=[("BMP", "*.bmp"), ("PNG", "*.png"), ("JPG", "*.jpg")]
         )
 
         if file_path:
