@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 
 class CreateGridWidgetHelper:
     
@@ -11,8 +12,16 @@ class CreateGridWidgetHelper:
         tk_frame.columnconfigure(columnconfigure, weight=1)
         return tk_frame
     
+    @staticmethod
     def canvas(root, background="#222222", position=(0,0)):
         colunm, row = position
         canvas = tk.Canvas(root, background=background)
         canvas.grid(row=row, column=colunm, sticky="news")
         return canvas
+    
+    @staticmethod
+    def ttk_button(root, text, command=None, position=(0,0)):
+        colunm, row = position
+        button = ttk.Button(root, text=text, command=command)
+        button.grid(row=row, column=colunm)
+        return button

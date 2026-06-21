@@ -1,11 +1,10 @@
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import filedialog
 from AppController import AppController
 from CreateGridWidgetHelper import CreateGridWidgetHelper
 from CanvasDataClass import CanvasDataClass
 from CanvasDrawHelper import CanvasDrawHelper
 
-import cv2
 
 class AppView(tk.Tk):
     def __init__(self, controller:AppController):
@@ -41,16 +40,12 @@ class AppView(tk.Tk):
         self.image_view_canvas = CreateGridWidgetHelper.canvas(self.canvas_frame)
         
         # ボタン配置
-        self.button_frame = CreateGridWidgetHelper.tk_frame(self, position=(1,0), rowconfigure=[0,1,2], columnconfigure=[0], relief=tk.SUNKEN)
-        
-        self.cut_image_button = ttk.Button(self.button_frame, text="切り取り")
-        self.cut_image_button.grid(row=0, column=0)
-
-        self.change_binary_button = ttk.Button(self.button_frame, text="2値化")
-        self.change_binary_button.grid(row=1, column=0)
-
-        self.detect_area_button = ttk.Button(self.button_frame, text="領域検出")
-        self.detect_area_button.grid(row=2, column=0)
+        self.button_frame = CreateGridWidgetHelper.tk_frame(self, position=(1,0), rowconfigure=[0,1,2,3,4], columnconfigure=[0], relief=tk.SUNKEN)
+        self.cut_image_button = CreateGridWidgetHelper.ttk_button(self.button_frame, text="切り取り", command=self.event_cut_image_button_click, position=(0,0))
+        self.change_binary_button = CreateGridWidgetHelper.ttk_button(self.button_frame, text="2値化", command=self.event_change_binary_button_click, position=(0,1))
+        self.detect_area_button = CreateGridWidgetHelper.ttk_button(self.button_frame, text="領域検出", command=self.event_detect_area_button_click, position=(0,2))
+        self.calucate_mean_button = CreateGridWidgetHelper.ttk_button(self.button_frame, text="平均値計算", command=self.event_calucate_mean_button_click, position=(0,3))
+        self.reset_button = CreateGridWidgetHelper.ttk_button(self.button_frame, text="リセット", command=self.event_reset_button_click, position=(0,4))
 
 
     def select_image_file(self):
@@ -61,9 +56,6 @@ class AppView(tk.Tk):
                 return
             self.controller.set_image(selected_image_path)
             CanvasDrawHelper.draw_image(self.controller.original_image, self.image_view_canvas, self.image_view_canvas_data)
-            
-            
-            
         except Exception as ex:
             print(f"エラー：{ex}")
 
@@ -96,6 +88,40 @@ class AppView(tk.Tk):
             return
         image_area = (CanvasDrawHelper.rectangle_to_image_area(self.image_view_canvas_data, self.controller.current_image))
         print(image_area)
-        x1, y1, x2, y2 = image_area
-        self.controller.current_image = self.controller.current_image[y1:y2, x1:x2]
+        self.controller.set_cut_area(image_area)
+        
+    def event_cut_image_button_click(self):
+        if self.image_view_canvas_data.photo_image is None:
+            print("画像未選択切り取り")
+            return
+        self.controller.decide_cut_image()
         CanvasDrawHelper.draw_image(self.controller.current_image, self.image_view_canvas, self.image_view_canvas_data)
+        
+    def event_change_binary_button_click(self):
+        if self.image_view_canvas_data.photo_image is None:
+            print("画像未選択2値化")
+            return
+        self.controller.change_binary()
+        CanvasDrawHelper.draw_image(self.controller.current_image, self.image_view_canvas, self.image_view_canvas_data)
+        
+    def event_reset_button_click(self):
+        if self.image_view_canvas_data.photo_image is None:
+            print("画像未選択リセット")
+            return
+        self.controller.current_image = self.controller.original_image.copy()
+        CanvasDrawHelper.draw_image(self.controller.current_image, self.image_view_canvas, self.image_view_canvas_data)
+    
+    def event_detect_area_button_click(self):
+        if self.image_view_canvas_data.photo_image is None:
+            print("画像未選択領域検出")
+            return
+        self.controller.detect_area()
+        CanvasDrawHelper.draw_image(self.controller.current_image, self.image_view_canvas, self.image_view_canvas_data)
+    
+    def event_calucate_mean_button_click(self):
+        if self.image_view_canvas_data.photo_image is None:
+            print("画像未選択平均値計算")
+            return
+        mean_value = self.controller.calculate_mean_value()
+        print(f"平均値: {mean_value}")
+    
