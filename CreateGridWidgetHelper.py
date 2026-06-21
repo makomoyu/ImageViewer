@@ -9,7 +9,8 @@ class CreateGridWidgetHelper:
         tk_frame = tk.Frame(root, relief=relief)
         tk_frame.grid(row=row, column=colunm, rowspan=rowspan, columnspan=colunmspan, sticky="news")
         tk_frame.rowconfigure(rowconfigure, weight=1)
-        tk_frame.columnconfigure(columnconfigure, weight=1)
+        if columnconfigure is not None:
+            tk_frame.columnconfigure(columnconfigure, weight=1)
         return tk_frame
     
     @staticmethod
@@ -25,3 +26,12 @@ class CreateGridWidgetHelper:
         button = ttk.Button(root, text=text, command=command)
         button.grid(row=row, column=colunm)
         return button
+    
+    def ttk_label_and_entry(root, label_text, position=(0,0), sticky="ew"):
+        column, row = position
+        label = ttk.Label(root, text=label_text)
+        label.grid(row=row, column=column)
+        entry = ttk.Entry(root)
+        entry.grid(row=row, column=column+1, sticky=sticky)
+        entry.insert(0, "")
+        return entry

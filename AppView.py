@@ -47,6 +47,13 @@ class AppView(tk.Tk):
         self.calucate_mean_button = CreateGridWidgetHelper.ttk_button(self.button_frame, text="平均値計算", command=self.event_calucate_mean_button_click, position=(0,3))
         self.reset_button = CreateGridWidgetHelper.ttk_button(self.button_frame, text="リセット", command=self.event_reset_button_click, position=(0,4))
 
+        # 情報表示用エントリ配置
+        self.image_data_frame = CreateGridWidgetHelper.tk_frame(self, position=(0,1), rowconfigure=0, relief=tk.SUNKEN)
+        self.image_data_frame.columnconfigure([1,3,5], weight=1)
+        
+        self.image_position_entry = CreateGridWidgetHelper.ttk_label_and_entry(self.image_data_frame, label_text="image_xy：", position=(0,0))
+        self.image_rgb_entry = CreateGridWidgetHelper.ttk_label_and_entry(self.image_data_frame, label_text="rgb：", position=(2,0) )
+        self.image_mean_entry = CreateGridWidgetHelper.ttk_label_and_entry(self.image_data_frame, label_text="image_mean：", position=(4,0))
 
     def select_image_file(self):
         try:
@@ -61,11 +68,22 @@ class AppView(tk.Tk):
 
 
     def _bind_canvas_event(self):
+        self.image_view_canvas.bind("<Motion>", self.event_mouse_motion)
         self.image_view_canvas.bind("<Button-1>", self.event_mouse_down)
-        self.image_view_canvas.bind("<B1-Motion>", self.event_mouse_move)
+        self.image_view_canvas.bind("<B1-Motion>", self.event_mouse_dragging)
         self.image_view_canvas.bind("<ButtonRelease-1>", self.event_mouse_release)
 
 
+    def event_mouse_motion(self, event):
+        if self.image_view_canvas_data.photo_image is None:
+            return
+        image_position = CanvasDrawHelper.canvas_to_image_position(event, self.controller.current_image, self.image_view_canvas_data)
+        self.image_position_entry.delete(0, tk.END)
+        self.image_position_entry.insert(0, f"{image_position}")
+
+        image_position_color = CanvasDrawHelper.canvas_to_image_color(image_position, self.controller.current_image)
+        self.image_rgb_entry.delete(0, tk.END)
+        self.image_rgb_entry.insert(0, f"{image_position_color}")
 
     def event_mouse_down(self, event):
         if self.image_view_canvas_data.photo_image is None:
@@ -73,7 +91,7 @@ class AppView(tk.Tk):
             return
         self.image_view_canvas_data.rectangle = (event.x,event.y,event.x,event.y)
 
-    def event_mouse_move(self, event):
+    def event_mouse_dragging(self, event):
         if self.image_view_canvas_data.photo_image is None:
             print("画像未選択ドラッグ")
             return
@@ -124,4 +142,6 @@ class AppView(tk.Tk):
             return
         mean_value = self.controller.calculate_mean_value()
         print(f"平均値: {mean_value}")
+        self.image_mean_entry.delete(0, tk.END)
+        self.image_mean_entry.insert(0, f"{mean_value}")
     

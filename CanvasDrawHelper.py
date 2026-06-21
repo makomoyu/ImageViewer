@@ -16,6 +16,18 @@ def canvas_to_image_coordinate(canvas_x: int,canvas_y: int,canvas_data: CanvasDa
 class CanvasDrawHelper:
 
     @staticmethod
+    def canvas_to_image_color(image_position, image):
+        image_x, image_y = image_position
+        b,g,r = image[image_y, image_x]
+        return int(r), int(g), int(b)
+
+    @staticmethod
+    def canvas_to_image_position(event, image, canvas_data):
+        event_x = event.x
+        event_y = event.y
+        return canvas_to_image_coordinate(event_x, event_y, canvas_data, image)
+
+    @staticmethod
     def rectangle_to_image_area(canvas_data: CanvasDataClass, image) -> tuple[int, int, int, int]:
 
         if canvas_data.rectangle is None:

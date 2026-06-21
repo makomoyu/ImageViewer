@@ -61,4 +61,6 @@ class ImageProcessor:
             print("画像未選択平均値計算")
             return None
         mean_value = cv2.mean(image)[:3]  # BGRの平均値を取得
-        return mean_value
+        b,g,r = mean_value
+
+        return round(r,3), round(g,3), round(b,3)
