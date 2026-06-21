@@ -5,6 +5,7 @@ from CreateGridWidgetHelper import CreateGridWidgetHelper
 from CanvasDataClass import CanvasDataClass
 from CanvasDrawHelper import CanvasDrawHelper
 
+import cv2
 
 class AppView(tk.Tk):
     def __init__(self, controller:AppController):
@@ -26,8 +27,8 @@ class AppView(tk.Tk):
 
         file_menu = tk.Menu(menu_bar, tearoff=False)
         file_menu.add_command(label="画像選択", command=self.select_image_file)
-        file_menu.add_command(label="保存")
-        file_menu.add_command(label="終了")
+        file_menu.add_command(label="保存", command=self.save_image)
+        file_menu.add_command(label="終了", command=self.exit_app)
 
         menu_bar.add_cascade(label="メニュー", menu=file_menu)
         self.config(menu=menu_bar)
@@ -65,6 +66,19 @@ class AppView(tk.Tk):
             CanvasDrawHelper.draw_image(self.controller.original_image, self.image_view_canvas, self.image_view_canvas_data)
         except Exception as ex:
             print(f"エラー：{ex}")
+
+    def save_image(self):
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".bmp",
+            filetypes=[("BMP files", "*.bmp"), ("PNG files", "*.png"), ("JPG files", "*.jpg")]
+        )
+
+        if file_path:
+            cv2.imwrite(file_path, self.controller.current_image)
+            print("保存完了:", file_path)
+
+    def exit_app(self):
+        self.destroy()
 
 
     def _bind_canvas_event(self):
