@@ -1,9 +1,6 @@
 from AppModel import AppModel
 import cv2
 from ImageProcessor import ImageProcessor
-import tkinter as tk
-from tkinter import filedialog
-from CanvasDrawHelper import CanvasDrawHelper
 from CanvasEvent import CanvasEvent
 from ButtonEvent import ButtonEvent
 from MenuEvent import MenuEvent
